@@ -21,14 +21,16 @@ export function NewsCard({
         height={360}
         className="news-card-image"
       />
-      <p className="eyebrow">{post.category}</p>
-      <Heading>
-        <Link href={`/news/${post.slug}/`}>{post.title}</Link>
-      </Heading>
-      <p>{post.summary}</p>
-      <p className="news-card-date">
-        <time dateTime={post.date}>{post.date}</time>
-      </p>
+      <div className="news-card-content">
+        <p className="eyebrow">{post.category}</p>
+        <Heading>
+          <Link href={`/news/${post.slug}/`}>{post.title}</Link>
+        </Heading>
+        <p>{post.summary}</p>
+        <p className="news-card-date">
+          <time dateTime={post.date}>{post.date}</time>
+        </p>
+      </div>
     </article>
   );
 }

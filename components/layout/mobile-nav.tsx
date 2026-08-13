@@ -22,11 +22,13 @@ export function MobileNav({ children }: { children: ReactNode }) {
         className="mobile-nav-toggle"
         aria-expanded={open}
         aria-controls={panelId}
+        data-open={open}
         onClick={() => setOpen((value) => !value)}
       >
         <span className="visually-hidden">{open ? "Close menu" : "Open menu"}</span>
         <span aria-hidden="true" className="mobile-nav-icon">
-          {open ? "✕" : "☰"}
+          <span />
+          <span />
         </span>
       </button>
       <div id={panelId} className="mobile-nav-panel" data-open={open}>

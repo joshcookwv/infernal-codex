@@ -25,7 +25,7 @@ export function SiteHeader() {
           />
           <span>{siteConfig.name}</span>
         </Link>
-        <span className="eyebrow status-badge">Android launch in progress</span>
+        <span className="eyebrow status-badge site-launch-status">Android launch in progress</span>
         <MobileNav>
           <nav aria-label="Primary navigation">
             <ul className="nav-list">
