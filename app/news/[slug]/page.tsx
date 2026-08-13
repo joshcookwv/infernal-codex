@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { NewsBody } from "@/components/content/news-body";
 import { getPublishedPost, getPublishedPosts } from "@/lib/content/news";
-import { absoluteUrl } from "@/lib/site-config";
+import { absoluteUrl, assetPath } from "@/lib/site-config";
 
 export const dynamicParams = false;
 
@@ -36,13 +37,32 @@ export default async function NewsArticlePage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <article className="shell page-section">
-      <p className="eyebrow">{post.category}</p>
-      <h1>{post.title}</h1>
-      <p className="news-card-date">
-        <time dateTime={post.date}>{post.date}</time>
-      </p>
-      <NewsBody markdown={post.body} />
+    <article className="shell page-section news-article">
+      <header className={post.image ? "news-article-hero panel" : "news-article-heading"}>
+        <div className="news-article-heading">
+          <p className="eyebrow">{post.category}</p>
+          <h1>{post.title}</h1>
+          <p className="news-article-summary">{post.summary}</p>
+          <p className="news-card-date">
+            <time dateTime={post.date}>{post.date}</time>
+          </p>
+        </div>
+        {post.image ? (
+          <div className="news-article-media">
+            <Image
+              src={assetPath(post.image)}
+              alt={`${post.title} recruitment announcement`}
+              width={1080}
+              height={1200}
+              priority
+              sizes="(min-width: 900px) 44vw, 100vw"
+            />
+          </div>
+        ) : null}
+      </header>
+      <div className="news-article-body">
+        <NewsBody markdown={post.body} />
+      </div>
     </article>
   );
 }

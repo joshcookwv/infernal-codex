@@ -29,6 +29,25 @@ describe("news content", () => {
     expect(container.querySelector("script")).toBeNull();
   });
 
+  it("prefixes local Markdown images for the configured deployment path", () => {
+    const previousBasePath = process.env.NEXT_PUBLIC_BASE_PATH;
+    process.env.NEXT_PUBLIC_BASE_PATH = "/infernal-codex";
+
+    try {
+      render(
+        <NewsBody markdown={'![Testers Wanted](/images/news/testers-wanted-2026-08.jpg)'} />,
+      );
+
+      expect(screen.getByRole("img", { name: "Testers Wanted" })).toHaveAttribute(
+        "src",
+        "/infernal-codex/images/news/testers-wanted-2026-08.jpg",
+      );
+    } finally {
+      if (previousBasePath === undefined) delete process.env.NEXT_PUBLIC_BASE_PATH;
+      else process.env.NEXT_PUBLIC_BASE_PATH = previousBasePath;
+    }
+  });
+
   it("reports a specified image that does not exist", () => {
     expect(() =>
       loadNewsPosts(path.join(fixtures, "invalid", "image"), path.join(fixtures, "public")),

@@ -24,6 +24,15 @@ test.describe("showcase smoke test", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Welcome to Infernal Codex" })).toBeVisible();
   });
 
+  test("Testers Wanted article renders its recruitment action", async ({ page }) => {
+    await page.goto("/news/testers-wanted/");
+    await expect(page.getByRole("heading", { level: 1, name: "Testers Wanted" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Email to join" })).toHaveAttribute(
+      "href",
+      "mailto:infernalbuldog@gmail.com",
+    );
+  });
+
   test("Roadmap renders", async ({ page }) => {
     await page.goto("/roadmap/");
     await expect(page.getByRole("heading", { level: 1, name: "What we are building" })).toBeVisible();
