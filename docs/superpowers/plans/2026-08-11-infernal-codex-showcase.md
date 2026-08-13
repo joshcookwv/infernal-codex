@@ -1542,7 +1542,7 @@ Confirm the created or existing repository's name is exactly `infernal-codex`. I
 
 Open the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions**, and run the Pages workflow if the initial push did not trigger it. Record the workflow URL and wait for both build and deploy jobs to succeed.
 
-- [ ] **Step 6: Verify the public deployment**
+- [x] **Step 6: Verify the public deployment**
 
 Check these exact URLs in a private browser session:
 
@@ -1561,7 +1561,7 @@ Verify HTTP success, correct branding, working assets and navigation, accurate p
 
 > **Deviation (real bug, found live and fixed):** Checking expected social metadata on the actual deployed site surfaced a doubled-basePath bug that `validate:pages` didn't catch (it only checks `href`/`src` attributes, not `<meta>` content): `og:image`/`twitter:image` rendered as `https://joshcookwv.github.io/infernal-codex/infernal-codex/images/brand/social-card.svg`. Next.js's metadata resolver concatenates `openGraph.images[].url` against `metadataBase` differently than it resolves the `icons`/`manifest` fields — a plain `assetPath()`-prefixed relative path (correct for `icons`) gets the basePath prepended a second time when used as an Open Graph/Twitter image URL. Fixed by switching those two fields (in `app/layout.tsx` and `app/news/[slug]/page.tsx`'s `generateMetadata`) from `assetPath()` to `absoluteUrl()`, which returns a fully-qualified URL that Next doesn't attempt to re-resolve. Verified the fix in the rebuilt HTML before redeploying: `content="https://joshcookwv.github.io/infernal-codex/images/brand/social-card.svg"`, no longer doubled.
 
-- [ ] **Step 7: Record evidence and commit the completed release checklist**
+- [x] **Step 7: Record evidence and commit the completed release checklist**
 
 Add the public URL, successful workflow run URL, verification date, and checked results to `docs/release-checklist.md`.
 
