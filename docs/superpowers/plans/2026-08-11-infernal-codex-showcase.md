@@ -695,7 +695,7 @@ git commit -m "feat: add Infernal Codex site shell"
 - Consumes: `getPublishedPosts()`, `NewsPost`, `assetPath()`, shared shell styles, and approved product wording.
 - Produces: a complete homepage and reusable typed marketing-content collections for later pages.
 
-- [ ] **Step 1: Define typed marketing content**
+- [x] **Step 1: Define typed marketing content**
 
 Create `lib/marketing-content.ts` exporting:
 
@@ -760,7 +760,7 @@ export const features: Feature[] = [
 ];
 ```
 
-- [ ] **Step 2: Write the failing homepage content test**
+- [x] **Step 2: Write the failing homepage content test**
 
 Create `components/marketing/__tests__/homepage.test.tsx`:
 
@@ -782,7 +782,7 @@ describe("homepage", () => {
 });
 ```
 
-- [ ] **Step 3: Run the test and verify the expected content failure**
+- [x] **Step 3: Run the test and verify the expected content failure**
 
 ```powershell
 npm.cmd test -- components/marketing/__tests__/homepage.test.tsx
@@ -790,7 +790,9 @@ npm.cmd test -- components/marketing/__tests__/homepage.test.tsx
 
 Expected: FAIL because the homepage does not yet contain the approved sections and copy.
 
-- [ ] **Step 4: Implement focused homepage components**
+- [x] **Step 4: Implement focused homepage components**
+
+> **Deviation:** `RoadmapPreview` hardcodes its Now/Next/Later summaries in this task (per this step's instruction), matching verbatim what Task 5's `lib/roadmap-content.ts` will define, so that Task 5's refactor to import from the shared module is a pure data-source swap with no visible content change. `components/content/news-card.tsx` (listed under this task's Files but not given exact code) falls back to `/images/news/fallback.svg` for posts without an `image`, and renders category/title/summary/date — not otherwise specified by the plan, so implemented to satisfy `LatestNews`'s consumption of it. Screenshot paths referenced by `Feature` objects (e.g. `/images/screenshots/campaign.png`) don't resolve to real files until Task 7 copies them — confirmed this produces broken-image 404s in dev, not a build failure, since `next/image` with `images.unoptimized: true` doesn't validate file existence at build time.
 
 Build each named component as a focused Server Component:
 
@@ -803,7 +805,7 @@ Build each named component as a focused Server Component:
 
 Compose them in `app/page.tsx` in the approved order. Give every section a stable heading and avoid duplicating the page `<h1>`.
 
-- [ ] **Step 5: Verify and commit the homepage**
+- [x] **Step 5: Verify and commit the homepage**
 
 ```powershell
 npm.cmd test -- components/marketing/__tests__/homepage.test.tsx
@@ -813,6 +815,8 @@ npm.cmd run build
 git add app/page.tsx components/content components/marketing lib/marketing-content.ts
 git commit -m "feat: build showcase homepage"
 ```
+
+> **Deviation:** Manually verified the rendered homepage via the dev server and the Browser pane's accessibility tree — all six sections present with correct headings, Android/Desktop status text, and the seeded news post. Replacing Task 1's placeholder `app/page.tsx` (which wrapped its content in its own `<main>`) with the real homepage also fixed a transient invalid-HTML nesting (`<main>` inside the root layout's `<main id="main-content">`) that existed only during Tasks 1–3; not a defect introduced by this task. Same branching note as prior tasks: committed on `task-4-homepage`, fast-forward merged into `master` locally (still no remote).
 
 ---
 
