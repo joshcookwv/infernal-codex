@@ -574,7 +574,9 @@ git commit -m "feat: add validated Markdown news content"
 - Consumes: `siteConfig`, `assetPath()`, and approved branding copied from the mobile repository.
 - Produces: `SiteHeader`, `MobileNav`, `SiteFooter`, shared `.shell`, button, panel, eyebrow, skip-link, and focus styles used by every page.
 
-- [ ] **Step 1: Copy only approved public brand assets into the website**
+- [x] **Step 1: Copy only approved public brand assets into the website**
+
+> **Deviation:** `git -C dm-assistant-mobile status --short` shows pre-existing uncommitted changes (`app.json`, several `src/` files, a few new `docs/` files, etc.) that predate and are unrelated to this task — they are the user's own in-progress work in that repository, not caused by this read-only logo copy. Recorded as the baseline; not touched, and re-checked in Task 7 Step 5 to confirm nothing new was added by website work.
 
 Read from the mobile repository and write copies only into the website repository:
 
@@ -591,7 +593,7 @@ git -C 'D:\Claude\projects\dm-assistant-mobile' status --short
 
 Record the output before continuing; do not alter or clean any pre-existing mobile changes.
 
-- [ ] **Step 2: Write the failing navigation accessibility test**
+- [x] **Step 2: Write the failing navigation accessibility test**
 
 Create `components/layout/__tests__/site-header.test.tsx`:
 
@@ -612,7 +614,7 @@ describe("SiteHeader", () => {
 });
 ```
 
-- [ ] **Step 3: Run the test and verify the missing component failure**
+- [x] **Step 3: Run the test and verify the missing component failure**
 
 ```powershell
 npm.cmd test -- components/layout/__tests__/site-header.test.tsx
@@ -620,7 +622,7 @@ npm.cmd test -- components/layout/__tests__/site-header.test.tsx
 
 Expected: FAIL because `site-header.tsx` does not exist.
 
-- [ ] **Step 4: Implement the server shell and isolated mobile interaction**
+- [x] **Step 4: Implement the server shell and isolated mobile interaction**
 
 Create `SiteHeader` and `SiteFooter` as Server Components. Create `MobileNav` as the only `"use client"` component in the shell, using a native button with `aria-expanded`, `aria-controls`, and Escape-to-close behavior. Use `next/link` for internal routes so configured `basePath` is added automatically.
 
@@ -631,7 +633,7 @@ Create `SiteHeader` and `SiteFooter` as Server Components. Create `MobileNav` as
 - Render `SiteHeader`, `<main id="main-content">`, and `SiteFooter`.
 - Avoid client state in the root layout.
 
-- [ ] **Step 5: Implement the visual tokens and accessibility baseline**
+- [x] **Step 5: Implement the visual tokens and accessibility baseline**
 
 In `app/globals.css`, define and use these exact foundation colors from the approved mobile direction:
 
@@ -654,7 +656,9 @@ Create `public/images/brand/social-card.svg` at 1200x630 using the same palette,
 
 Generate `public/favicon.ico`, `public/apple-touch-icon.png` (180x180), and `public/site.webmanifest` from the same brand mark and palette as the logo and social card.
 
-- [ ] **Step 6: Verify and commit the shared shell**
+> **Deviation:** No ImageMagick/`rsvg-convert`/Inkscape was available in this environment to rasterize an SVG into `.ico`/`.png`, so `public/favicon.ico` and `public/apple-touch-icon.png` were generated with a small Python + Pillow script (`Pillow` was already installed) that draws the same ember-circle/spark mark programmatically at multiple sizes, rather than converting from `social-card.svg`. Also added `public/images/brand/icon-192.png` and `icon-512.png` (192×192 and 512×512), needed by `site.webmanifest`'s `icons` array — the plan's Files list for this task didn't anticipate the manifest needing separate PNG sizes beyond the favicon/apple-touch-icon.
+
+- [x] **Step 6: Verify and commit the shared shell**
 
 ```powershell
 npm.cmd test -- components/layout/__tests__/site-header.test.tsx
@@ -664,6 +668,12 @@ npm.cmd run build
 git add app components/layout public/images/brand public/favicon.ico public/apple-touch-icon.png public/site.webmanifest
 git commit -m "feat: add Infernal Codex site shell"
 ```
+
+> **Deviation:** Also staged `public/images/brand/icon-192.png` and `icon-512.png` (see Step 5 note) since `git add public/images/brand` covers them. Manually verified the rendered header/nav/footer structure via a local dev server and the Browser pane's accessibility tree (skip link, single "Primary navigation" landmark with all five links, mobile toggle button, footer nav) rather than a screenshot, since the screenshot capture needs the pane actively displayed. Added an `infernal-codex` entry to `D:\Claude\.claude\launch.json` (outside this repository) to enable this preview.
+>
+> Running `npm run dev` for this preview caused Next.js 16 to auto-generate `AGENTS.md` and `CLAUDE.md` (agent-guidance files pointing at the bundled Next.js docs, written by `next dev` itself per `node_modules/next/dist/server/lib/generate-agent-files.js`) and to flip `next-env.d.ts`'s type-reference paths from `.next/types/...` to `.next/dev/types/...`. Committed all three, following Next.js's own guidance in `AGENTS.md` that committing them "keeps the tree clean" rather than having them regenerate as an uncommitted diff on every `next dev`/`next build`.
+>
+> Same branching note as prior tasks: committed on `task-3-site-shell`, fast-forward merged into `master` locally (still no remote).
 
 ---
 
