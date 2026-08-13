@@ -1508,7 +1508,7 @@ Use the production Pages build and review 390x844, 768x1024, 1440x900, and 1920x
 
 Fix only evidenced issues, rerun the nearest focused test, and then rerun `npm run verify`.
 
-- [ ] **Step 3: Obtain the required external-action approval**
+- [x] **Step 3: Obtain the required external-action approval**
 
 Before creating a public GitHub repository or pushing, show the user:
 
