@@ -938,7 +938,11 @@ git commit -m "feat: add showcase information pages"
 - Consumes: `getPublishedPosts()`, `getPublishedPost()`, `NewsCard`, `absoluteUrl()`, `assetPath()`, and Markdown rendering.
 - Produces: `/news/`, one exported route per published slug, `generateStaticParams()`, `generateMetadata()`, `/sitemap.xml`, `/robots.txt`, and the global 404 page.
 
-- [ ] **Step 1: Write failing news-route and metadata tests**
+- [x] **Step 1: Write failing news-route and metadata tests**
+
+> **Deviation:** `components/content/news-card.tsx` (built in Task 4) hardcoded an `<h3>` for the post title, sized for its use inside the homepage's "Latest news" section (nested under that section's own `<h2>`). This task's exact given test asserts the News index page's post titles are `level: 2` headings, since on `/news/` each post is a direct peer of the page's `<h1>`, not nested under an intervening `<h2>`. Added an optional `headingLevel?: "h2" | "h3"` prop (default `"h3"`, preserving `LatestNews`'s existing usage) so `NewsCard` renders the semantically correct level in each context; `app/news/page.tsx` passes `headingLevel="h2"`.
+>
+> The plan gives exact code only for the three-test block; the additional described behaviors (unknown-slug → `notFound()`, article metadata fields, sitemap completeness, robots) were written from their prose descriptions. Split as: `news-pages.test.tsx` got the given three tests plus the metadata-fields and unknown-slug tests (since both concern the news article route this file already imports from); `metadata-routes.test.ts` got sitemap-completeness and robots. For the unknown-slug test, mocked `next/navigation`'s `notFound` to throw (matching its real behavior of throwing a special not-found signal) and asserted the async Server Component's returned promise rejects — this is the standard way to unit-test an App Router `notFound()` call outside a full Next.js request context, per this step's instruction to mock `next/navigation` only for that isolated test.
 
 Create tests with this structure:
 
@@ -979,7 +983,7 @@ The completed tests also assert:
 
 Mock `next/navigation` only for the isolated unknown-slug unit test. Do not mock the content engine for sorting or sitemap tests.
 
-- [ ] **Step 2: Run tests and verify missing-module failures**
+- [x] **Step 2: Run tests and verify missing-module failures**
 
 ```powershell
 npm.cmd test -- app/news/__tests__/news-pages.test.tsx app/__tests__/metadata-routes.test.ts
@@ -987,7 +991,7 @@ npm.cmd test -- app/news/__tests__/news-pages.test.tsx app/__tests__/metadata-ro
 
 Expected: FAIL because the route and metadata modules do not exist.
 
-- [ ] **Step 3: Implement the News index and build-time article route**
+- [x] **Step 3: Implement the News index and build-time article route**
 
 `app/news/page.tsx` renders all published posts or the intentional empty state.
 
@@ -1003,13 +1007,17 @@ export function generateStaticParams() {
 
 Use the current App Router async `params: Promise<{ slug: string }>` signature. Await params in both the page and `generateMetadata()`. Call `notFound()` for an unpublished or unknown slug. Render Markdown without raw HTML support.
 
-- [ ] **Step 4: Implement metadata routes and the branded 404**
+- [x] **Step 4: Implement metadata routes and the branded 404**
 
 - `sitemap.ts` returns `MetadataRoute.Sitemap` using `absoluteUrl()` for Home, Features, News, Roadmap, About, Support, and every published article.
 - `robots.ts` returns `MetadataRoute.Robots` allowing `/` and pointing to `absoluteUrl("/sitemap.xml")`.
 - `not-found.tsx` explains that the page was not found and links to Home, News, and Support.
 
-- [ ] **Step 5: Verify exported news files and commit**
+> **Deviation:** This step names six static pages for the sitemap (Home, Features, News, Roadmap, About, Support); the Step 5 verification bullet below says "the seven static pages." Implemented the six explicitly named here — no seventh static route exists anywhere in this plan's File and Responsibility Map — and treated "seven" as an off-by-one in the plan text rather than inventing an unspecified page.
+>
+> Under Next.js 16 with `output: "export"`, building `sitemap.ts`/`robots.ts` failed with `export const dynamic = "force-static"/export const revalidate not configured on route "/robots.txt" with "output: export"` — a stricter static-export requirement for these special metadata route files that this Next.js version enforces but the plan's given descriptions didn't mention (likely introduced after the plan was authored, same class of issue as Task 1's module-format deviation). Added `export const dynamic = "force-static";` to both files to satisfy it.
+
+- [x] **Step 5: Verify exported news files and commit**
 
 ```powershell
 npm.cmd test -- app/news/__tests__/news-pages.test.tsx app/__tests__/metadata-routes.test.ts
@@ -1024,10 +1032,14 @@ Test-Path 'out\robots.txt'
 
 Expected: all checks pass and all four `Test-Path` calls return `True`.
 
+> **Deviation:** Ran the equivalent in Git Bash (`MSYS_NO_PATHCONV=1 NEXT_PUBLIC_BASE_PATH=/infernal-codex npm run build`) — without `MSYS_NO_PATHCONV=1`, Git Bash's automatic POSIX-to-Windows path conversion mangled `/infernal-codex` into an absolute Windows path before Next.js ever saw it. Also hit a transient `EPERM: operation not permitted, unlink … .next\server\app\news` on the first two attempts, because the Task 3–5 background `npm run dev` server (started earlier in this session for manual visual verification) still held `.next/` open; stopped that dev server process before the build succeeded. All four `Test-Path` equivalents (`test -f`) returned true.
+
 ```powershell
 git add app/news app/not-found.tsx app/sitemap.ts app/robots.ts app/__tests__
 git commit -m "feat: publish static news and metadata routes"
 ```
+
+> **Deviation:** Also staged the modified `components/content/news-card.tsx` (Step 1's `headingLevel` change) since it's a direct dependency of this task's route work. Same branching note as prior tasks: committed on `task-6-news-routes`, fast-forward merged into `master` locally (still no remote).
 
 ---
 
