@@ -14,8 +14,10 @@
     "lint": "eslint .",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
-    "validate:assets": "node scripts/validate-assets.mjs"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run validate:assets && npm run build && npm run test:e2e && npm run build:pages && npm run validate:pages",
+    "validate:assets": "node scripts/validate-assets.mjs",
+    "build:pages": "cross-env NEXT_PUBLIC_BASE_PATH=/infernal-codex next build",
+    "validate:pages": "node scripts/validate-pages.mjs"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +41,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.0",
     "jsdom": "^30.0.1",

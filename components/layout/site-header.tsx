@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/lib/site-config";
+import { assetPath, siteConfig } from "@/lib/site-config";
 import { MobileNav } from "./mobile-nav";
 
 const NAV_LINKS = [
@@ -17,7 +17,7 @@ export function SiteHeader() {
       <div className="shell site-header-inner">
         <Link href="/" className="brand">
           <Image
-            src="/images/brand/logo.png"
+            src={assetPath("/images/brand/logo.png")}
             alt=""
             width={32}
             height={32}

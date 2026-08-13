@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { absoluteUrl } from "@/lib/site-config";
+import { absoluteUrl, assetPath } from "@/lib/site-config";
 import { features } from "@/lib/marketing-content";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function FeaturesPage() {
         {features.map((feature) => (
           <article key={feature.title} className="feature-row">
             <Image
-              src={feature.image}
+              src={assetPath(feature.image)}
               alt={feature.imageAlt}
               width={640}
               height={480}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { assetPath } from "@/lib/site-config";
 
 export function Hero() {
   return (
@@ -20,14 +21,14 @@ export function Hero() {
       </div>
       <div className="hero-media">
         <Image
-          src="/images/screenshots/dashboard.png"
+          src={assetPath("/images/screenshots/dashboard.png")}
           alt="Infernal Codex dashboard on Android."
           width={360}
           height={780}
           priority
         />
         <Image
-          src="/images/screenshots/encounter.png"
+          src={assetPath("/images/screenshots/encounter.png")}
           alt="Infernal Codex encounter runner on Android."
           width={360}
           height={780}

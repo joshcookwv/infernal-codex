@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { features } from "@/lib/marketing-content";
+import { assetPath } from "@/lib/site-config";
 
 export function FeatureShowcase() {
   return (
@@ -12,7 +13,7 @@ export function FeatureShowcase() {
             className={`feature-row${index % 2 === 1 ? " feature-row-reverse" : ""}`}
           >
             <Image
-              src={feature.image}
+              src={assetPath(feature.image)}
               alt={feature.imageAlt}
               width={640}
               height={480}

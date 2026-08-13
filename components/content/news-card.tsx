@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { assetPath } from "@/lib/site-config";
 import type { NewsPost } from "@/lib/content/types";
 
 export function NewsCard({
@@ -14,7 +15,7 @@ export function NewsCard({
   return (
     <article className="panel news-card">
       <Image
-        src={post.image ?? "/images/news/fallback.svg"}
+        src={assetPath(post.image ?? "/images/news/fallback.svg")}
         alt=""
         width={640}
         height={360}

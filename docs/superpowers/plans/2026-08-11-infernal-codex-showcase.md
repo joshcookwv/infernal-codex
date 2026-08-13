@@ -1187,7 +1187,7 @@ git commit -m "feat: add approved product showcase assets"
 - Consumes: production `out/` export and all public routes.
 - Produces: repeatable Chromium smoke, axe, internal-link, keyboard, and viewport checks through `npm run test:e2e` and `npm run verify`.
 
-- [ ] **Step 1: Write the browser smoke test before adding its server configuration**
+- [x] **Step 1: Write the browser smoke test before adding its server configuration**
 
 In `tests/e2e/showcase.spec.ts`, visit Home, Features, News, the seeded article, Roadmap, About, Support, and a missing route. Assert successful page headings, the custom 404, Android-primary copy, Windows in-development copy, and absence of iOS-availability copy.
 
@@ -1199,7 +1199,7 @@ npx.cmd playwright test tests/e2e/showcase.spec.ts
 
 Expected: FAIL with connection errors because no Playwright web server is configured.
 
-- [ ] **Step 2: Configure Playwright against the local production export**
+- [x] **Step 2: Configure Playwright against the local production export**
 
 Create `playwright.config.ts` with:
 
@@ -1228,7 +1228,7 @@ Install the browser once:
 npx.cmd playwright install chromium
 ```
 
-- [ ] **Step 3: Build locally and make the smoke test pass**
+- [x] **Step 3: Build locally and make the smoke test pass**
 
 ```powershell
 npm.cmd run build
@@ -1300,13 +1300,17 @@ console.log(`Validated ${htmlFiles.length} GitHub Pages HTML files.`);
 
 Expected: `npm run validate:pages` passes.
 
-- [ ] **Step 5: Add axe, keyboard, internal-link, and viewport tests**
+> **Deviation (major, affects Tasks 3–5's files):** Running `validate:pages` here was the first time anything checked the *actual* GitHub Pages-prefixed HTML output, and it caught a real defect: `next/image` with `images.unoptimized: true` (required for static export) does **not** automatically prepend `basePath` to the rendered `<img src>` — that auto-prefixing only applies to `next/link` and to `next/image` when going through Next's Image Optimization API, which is bypassed entirely in unoptimized mode. Every `<Image src="/images/...">` call across the site (site header logo, hero screenshots, feature-showcase images, the Features page, and news-card thumbnails/fallback) was rendering an unprefixed root path that would 404 under `/infernal-codex/` on GitHub Pages. Fixed by wrapping every such `src` with the existing `assetPath()` helper from `lib/site-config.ts` (already used correctly for metadata icons and Open Graph images in Task 3) in: `components/layout/site-header.tsx`, `components/content/news-card.tsx`, `components/marketing/hero.tsx`, `components/marketing/feature-showcase.tsx`, and `app/features/page.tsx`. This is exactly the class of bug `validate:pages` exists to catch, and it worked as intended.
+
+- [x] **Step 5: Add axe, keyboard, internal-link, and viewport tests**
 
 - `accessibility.spec.ts`: run `AxeBuilder` on every public route and assert zero WCAG 2.2 A/AA violations; Tab from the top, verify the skip link becomes visible, activate it, and verify focus reaches `#main-content`; verify mobile navigation button state and Escape behavior.
 - `links.spec.ts`: collect every same-origin `<a href>`, visit each unique route, and assert no response/status failure and no generic browser error page. Assert external links use HTTPS except `mailto:`.
 - `responsive.spec.ts`: test 390x844, 768x1024, 1440x900, and 1920x1080; assert `document.documentElement.scrollWidth <= window.innerWidth`; verify primary actions remain visible; save screenshots under Playwright's test output only.
 
-- [ ] **Step 6: Run the full automated verification and commit**
+> **Deviation:** The skip-link → `#main-content` focus test requires the target actually to be focusable. A bare `<main id="main-content">` (as written in Task 3) isn't in the browser's focus order, so activating the skip link would scroll to it without moving `document.activeElement`. Added `tabIndex={-1}` to `app/layout.tsx`'s `<main>` — the standard fix for this exact WCAG skip-link pattern — which the axe/keyboard test then verified genuinely works. All 7 routes passed zero WCAG 2.2 A/AA violations on the first real run once this and the `assetPath()` fixes above were in place.
+
+- [x] **Step 6: Run the full automated verification and commit**
 
 ```powershell
 npm.cmd pkg set scripts.verify="npm run typecheck && npm run lint && npm run test && npm run validate:assets && npm run build && npm run test:e2e && npm run build:pages && npm run validate:pages"
@@ -1314,6 +1318,12 @@ npm.cmd run verify
 git add playwright.config.ts tests scripts/validate-pages.mjs package.json package-lock.json
 git commit -m "test: verify showcase accessibility and routes"
 ```
+
+> **Deviation:** The first `npm run verify` run failed at the `npm run test` (Vitest) step with `Playwright Test did not expect test.describe() to be called here` — Vitest's default file-discovery glob picks up any `*.spec.ts` anywhere in the project, including the newly added `tests/e2e/*.spec.ts` files, which import from `@playwright/test` and error outside the Playwright runner. This is a gap in Task 1's `vitest.config.ts` that had no effect until Playwright specs existed. Fixed by adding `exclude: [...configDefaults.exclude, "tests/e2e/**"]` to `vitest.config.ts`'s `test` config.
+>
+> Also hit the same Git Bash path-conversion issue as Task 6 (`MSYS_NO_PATHCONV=1` needed before `NEXT_PUBLIC_BASE_PATH=/infernal-codex`) and a transient `EPERM: operation not permitted, unlink` on `.next/` (same OneDrive file-lock class of issue as Task 6's build), resolved by deleting `.next/` before rebuilding. With those fixes, `npm run verify` passed clean end-to-end: 18 Vitest tests, `validate:assets`, the default build, all 22 Playwright tests (accessibility, links, responsive, and the original smoke test), `build:pages`, and `validate:pages`.
+>
+> Staged `vitest.config.ts`, `app/layout.tsx`, and the five `assetPath()`-fixed component/page files from the Step 4 deviation above alongside this step's listed files, since they're direct fixes required for this task's own verification to pass. Same branching note as prior tasks: committed on `task-8-e2e-verification`, fast-forward merged into `master` locally (still no remote).
 
 ---
 
