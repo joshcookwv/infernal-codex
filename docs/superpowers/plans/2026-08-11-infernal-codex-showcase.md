@@ -1479,7 +1479,7 @@ git commit -m "ci: add verified GitHub Pages publishing"
 - Consumes: complete local site, passing automated checks, GitHub authentication, and explicit user approval for public repository creation/push.
 - Produces: a verified public repository and GitHub Pages site at `https://joshcookwv.github.io/infernal-codex/`.
 
-- [ ] **Step 1: Run the complete local verification from a clean checkout state**
+- [x] **Step 1: Run the complete local verification from a clean checkout state**
 
 ```powershell
 npm.cmd ci
@@ -1491,7 +1491,7 @@ git status --short --branch
 
 Expected: all checks pass and Git status contains only the intentionally updated release checklist, if any.
 
-- [ ] **Step 2: Complete the manual visual and accessibility review**
+- [x] **Step 2: Complete the manual visual and accessibility review**
 
 Use the production Pages build and review 390x844, 768x1024, 1440x900, and 1920x1080. Check every item in `docs/release-checklist.md`. Specifically verify:
 
@@ -1503,6 +1503,8 @@ Use the production Pages build and review 390x844, 768x1024, 1440x900, and 1920x
 - No private credential, build artifact, environment file, or reviewer identifier appears in the site or Git history.
 - `siteConfig.privacyUrl` and `siteConfig.licensesUrl` both resolve to live pages (Task 8's automated link checker only validates that external links use HTTPS, not that these specific cross-repository URLs return a successful response).
 - The Task 7 screenshots still reflect the current shipped Android app UI rather than a stale snapshot from when they were copied.
+
+> **Deviation (real layout defect, fixed here):** Reviewing actual rendered screenshots (Playwright's saved `test-results/responsive-*.png`, viewed directly, plus a live static-export preview) surfaced something none of the automated checks caught: `app/globals.css` never defined layout rules for most section classes referenced by components built in Tasks 4–7 (`.hero`, `.hero-media`, `.benefit-grid`, `.feature-row`/`.feature-row-reverse`, `.platform-status-grid`, `.latest-news-grid`, `.news-card`, `.roadmap-preview-list`/`.roadmap-stages`, `.faq-list`, `.page-section`). Nothing was visually *broken* — no overflow, all text readable, every automated test (including axe, which doesn't check visual layout) passed — but the hero rendered as a plain stacked column instead of the intended side-by-side split, the benefit grid and platform status never formed multi-column grids at wider viewports, and feature rows never alternated image/copy sides. This is exactly the kind of defect automated tests can't catch and a manual visual pass exists to find. Added the missing CSS (responsive grid/flex rules with breakpoints at 640–1024px, alternating rows via a `direction: rtl` / child `direction: ltr` toggle for `.feature-row-reverse`) to `app/globals.css`. Re-ran the full accessibility and responsive Playwright suites afterward — still zero WCAG violations and no overflow at any of the four reviewed widths — and re-viewed the regenerated screenshots to confirm the intended layout now renders.
 
 Fix only evidenced issues, rerun the nearest focused test, and then rerun `npm run verify`.
 
