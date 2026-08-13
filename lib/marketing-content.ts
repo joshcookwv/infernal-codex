@@ -6,11 +6,29 @@ export type Feature = {
   imageAlt: string;
 };
 
+export type Benefit = {
+  title: string;
+  description: string;
+  icon: "campaign" | "encounter" | "local";
+};
+
 export const benefits = [
-  "Prepare everything in one place.",
-  "Run encounters without breaking momentum.",
-  "Keep campaign data local and under your control.",
-] as const;
+  {
+    title: "Prepare everything in one place.",
+    description: "Connect campaigns, locations, NPCs, encounters, notes, and maps without scattering prep across tabs.",
+    icon: "campaign",
+  },
+  {
+    title: "Run encounters without breaking momentum.",
+    description: "Keep initiative, hit points, armor class, and conditions visible while the table stays moving.",
+    icon: "encounter",
+  },
+  {
+    title: "Keep campaign data local and under your control.",
+    description: "Ordinary campaign records stay on the device, with backups you control.",
+    icon: "local",
+  },
+] satisfies readonly Benefit[];
 
 export const features: Feature[] = [
   {

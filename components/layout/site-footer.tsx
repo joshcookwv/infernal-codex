@@ -5,8 +5,10 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="shell site-footer-inner">
-        <p className="site-footer-brand">{siteConfig.name}</p>
-        <p className="site-footer-tagline">{siteConfig.description}</p>
+        <div className="site-footer-copy">
+          <p className="site-footer-brand">{siteConfig.name}</p>
+          <p className="site-footer-tagline">{siteConfig.description}</p>
+        </div>
         <nav aria-label="Footer">
           <ul className="nav-list">
             <li>

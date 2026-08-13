@@ -13,16 +13,21 @@ export default function FeaturesPage() {
   return (
     <div className="shell page-section">
       <h1>Tools for the whole campaign</h1>
-      <div className="feature-rows">
-        {features.map((feature) => (
-          <article key={feature.title} className="feature-row">
-            <Image
-              src={assetPath(feature.image)}
-              alt={feature.imageAlt}
-              width={640}
-              height={480}
-              className="feature-row-image"
-            />
+      <div className="feature-detail-list">
+        {features.map((feature, index) => (
+          <article
+            key={feature.title}
+            className={`feature-detail-row${index % 2 === 1 ? " feature-detail-row-reverse" : ""}`}
+          >
+            <div className="feature-detail-media">
+              <Image
+                src={assetPath(feature.image)}
+                alt={feature.imageAlt}
+                width={1080}
+                height={1920}
+                sizes="(min-width: 800px) 380px, 90vw"
+              />
+            </div>
             <div className="feature-row-copy">
               <h2>{feature.title}</h2>
               <p className="feature-row-benefit">{feature.benefit}</p>

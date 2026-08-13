@@ -5,6 +5,15 @@ import { assetPath } from "@/lib/site-config";
 export function Hero() {
   return (
     <section className="hero shell">
+      <div className="hero-brand-mark" aria-hidden="true">
+        <Image
+          src={assetPath("/images/brand/logo.png")}
+          alt=""
+          width={420}
+          height={420}
+          priority
+        />
+      </div>
       <div className="hero-copy">
         <h1>Your campaign. At the table.</h1>
         <p>
@@ -20,19 +29,27 @@ export function Hero() {
         <p className="hero-secondary-status">Desktop version in development</p>
       </div>
       <div className="hero-media">
-        <Image
-          src={assetPath("/images/screenshots/dashboard.png")}
-          alt="Infernal Codex dashboard on Android."
-          width={360}
-          height={780}
-          priority
-        />
-        <Image
-          src={assetPath("/images/screenshots/encounter.png")}
-          alt="Infernal Codex encounter runner on Android."
-          width={360}
-          height={780}
-        />
+        <div className="hero-device hero-device-primary">
+          <span className="hero-device-speaker" aria-hidden="true" />
+          <Image
+            src={assetPath("/images/screenshots/dashboard.png")}
+            alt="Infernal Codex dashboard on Android."
+            width={1080}
+            height={1920}
+            sizes="(min-width: 900px) 300px, 44vw"
+            priority
+          />
+        </div>
+        <div className="hero-device hero-device-secondary">
+          <span className="hero-device-speaker" aria-hidden="true" />
+          <Image
+            src={assetPath("/images/screenshots/encounter.png")}
+            alt="Infernal Codex encounter runner on Android."
+            width={1080}
+            height={1920}
+            sizes="(min-width: 900px) 260px, 44vw"
+          />
+        </div>
       </div>
     </section>
   );
