@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsBody } from "@/components/content/news-body";
 import { getPublishedPost, getPublishedPosts } from "@/lib/content/news";
-import { absoluteUrl, assetPath } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-config";
 
 export const dynamicParams = false;
 
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       title: post.title,
       description: post.summary,
-      images: [{ url: assetPath(post.image ?? "/images/news/fallback.svg") }],
+      images: [{ url: absoluteUrl(post.image ?? "/images/news/fallback.svg") }],
     },
   };
 }

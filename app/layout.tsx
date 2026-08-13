@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     url: "/",
     siteName: siteConfig.name,
-    images: [{ url: assetPath("/images/brand/social-card.svg"), width: 1200, height: 630 }],
+    images: [{ url: absoluteUrl("/images/brand/social-card.svg"), width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [assetPath("/images/brand/social-card.svg")],
+    images: [absoluteUrl("/images/brand/social-card.svg")],
   },
   icons: {
     icon: assetPath("/favicon.ico"),
