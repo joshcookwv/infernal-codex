@@ -1340,7 +1340,7 @@ git commit -m "test: verify showcase accessibility and routes"
 - Consumes: all verification scripts and the `out/` Pages build.
 - Produces: required CI evidence, least-privilege Pages deployment, and screen-by-screen beginner instructions for local preview and publishing.
 
-- [ ] **Step 1: Create pull-request and branch CI**
+- [x] **Step 1: Create pull-request and branch CI**
 
 Create `.github/workflows/ci.yml`:
 
@@ -1376,7 +1376,7 @@ jobs:
           retention-days: 7
 ```
 
-- [ ] **Step 2: Create the least-privilege Pages workflow**
+- [x] **Step 2: Create the least-privilege Pages workflow**
 
 Create `.github/workflows/pages.yml`:
 
@@ -1430,7 +1430,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-- [ ] **Step 3: Write the beginner README**
+- [x] **Step 3: Write the beginner README**
 
 `README.md` must include exact PowerShell steps for:
 
@@ -1442,13 +1442,15 @@ npm.cmd run verify
 
 Explain how to open `http://localhost:3000`, what each major folder owns, why GitHub Pages builds use `/infernal-codex`, how static hosting limits server features, and that neither application repository is a website dependency.
 
-- [ ] **Step 4: Write the news-publishing guide and release checklist**
+- [x] **Step 4: Write the news-publishing guide and release checklist**
+
+> **Deviation:** `docs/release-checklist.md` includes three placeholder lines under "Public deployment" (Pages workflow run URL, verified site date) marked `_pending_`, to be filled in by Task 10 Step 7 once those facts exist — the plan's own Step 7 instruction is to "add" this evidence to the checklist, implying the checklist should already have a place for it.
 
 `docs/publishing-news.md` must show one complete Markdown example, how to preview it as a draft, how to set `published: true`, how dates/categories/images work, and the exact validation commands.
 
 `docs/release-checklist.md` must contain checkboxes for copy approval, Android status accuracy, desktop wording, drafts, assets, typecheck, lint, unit tests, asset validation, Pages build, E2E checks, keyboard review, responsive review, external links, GitHub Actions, and public post-deployment verification.
 
-- [ ] **Step 5: Validate YAML, documentation commands, and commit**
+- [x] **Step 5: Validate YAML, documentation commands, and commit**
 
 Run:
 
@@ -1463,6 +1465,8 @@ Read both workflow files against the official GitHub Pages custom-workflow seque
 git add .github README.md docs/publishing-news.md docs/release-checklist.md
 git commit -m "ci: add verified GitHub Pages publishing"
 ```
+
+> **Deviation:** Same Git Bash/OneDrive notes as prior tasks applied while running `npm run verify` (`MSYS_NO_PATHCONV=1`, cleared `.next/` first) — no new issues surfaced this task. `git diff --check` reported nothing. Same branching note as prior tasks: committed on `task-9-ci-docs`, fast-forward merged into `master` locally (still no remote — Task 10 creates it, with explicit approval, next).
 
 ---
 
