@@ -834,7 +834,7 @@ git commit -m "feat: build showcase homepage"
 - Consumes: `features`, `siteConfig`, shared page styles, and the approved Now/Next/Later positioning.
 - Produces: four static public routes and `roadmapStages` used by both Home and Roadmap.
 
-- [ ] **Step 1: Centralize complete roadmap content**
+- [x] **Step 1: Centralize complete roadmap content**
 
 Create `lib/roadmap-content.ts`:
 
@@ -866,7 +866,7 @@ export const roadmapStages: readonly RoadmapStage[] = [
 
 Update `RoadmapPreview` from Task 4 to consume this array rather than duplicate the data.
 
-- [ ] **Step 2: Write failing route-content tests**
+- [x] **Step 2: Write failing route-content tests**
 
 In `app/__tests__/informational-pages.test.tsx`, render each page directly and assert:
 
@@ -877,7 +877,7 @@ In `app/__tests__/informational-pages.test.tsx`, render each page directly and a
 
 Use `screen.getByRole()` for headings and links instead of matching implementation classes.
 
-- [ ] **Step 3: Run tests and verify missing-route failures**
+- [x] **Step 3: Run tests and verify missing-route failures**
 
 ```powershell
 npm.cmd test -- app/__tests__/informational-pages.test.tsx
@@ -885,7 +885,9 @@ npm.cmd test -- app/__tests__/informational-pages.test.tsx
 
 Expected: FAIL because the four page modules do not exist.
 
-- [ ] **Step 4: Implement the four pages with the approved public copy**
+- [x] **Step 4: Implement the four pages with the approved public copy**
+
+> **Deviation:** The plan's Step 2 describes test *behaviors* rather than giving exact test code for this task (unlike most other tasks), so `app/__tests__/informational-pages.test.tsx` was authored from those behaviors: six feature headings on Features; Now/Next/Later text and no `Q1`–`Q4` pattern on Roadmap; the exact About h1 plus "independent project" / "stay local to the app" phrase checks; and Support link/heading assertions resolved against `siteConfig` values rather than hardcoded strings, so the test stays correct if those values ever change. Roadmap page also renders each stage's `items` (not just the stage titles) since `roadmapStages` already carries that detail and the plan's own Roadmap Preview vs. full Roadmap distinction implies the full page should show more than the homepage summary.
 
 Each page exports unique `Metadata` with title, description, and canonical path.
 
@@ -906,7 +908,7 @@ const faqs = [
 
 Link `siteConfig.privacyUrl`, `siteConfig.licensesUrl`, and `${siteConfig.mobileGithubUrl}/issues/new` with descriptive link text. Each page exports unique `Metadata` with its canonical URL from `absoluteUrl()`.
 
-- [ ] **Step 5: Verify and commit the informational pages**
+- [x] **Step 5: Verify and commit the informational pages**
 
 ```powershell
 npm.cmd test -- app/__tests__/informational-pages.test.tsx
@@ -916,6 +918,8 @@ npm.cmd run build
 git add app/features app/roadmap app/about app/support app/__tests__ lib/roadmap-content.ts components/marketing/roadmap-preview.tsx
 git commit -m "feat: add showcase information pages"
 ```
+
+> **Deviation:** Same branching note as prior tasks: committed on `task-5-info-pages`, fast-forward merged into `master` locally (still no remote).
 
 ---
 

@@ -1,10 +1,5 @@
 import Link from "next/link";
-
-const ROADMAP_SUMMARY = [
-  { label: "Now", title: "Preparing the Android release" },
-  { label: "Next", title: "Improve the released experience" },
-  { label: "Later", title: "Build the Windows desktop edition" },
-] as const;
+import { roadmapStages } from "@/lib/roadmap-content";
 
 export function RoadmapPreview() {
   return (
@@ -14,7 +9,7 @@ export function RoadmapPreview() {
         <Link href="/roadmap/">Full roadmap</Link>
       </div>
       <ol className="roadmap-preview-list">
-        {ROADMAP_SUMMARY.map((stage) => (
+        {roadmapStages.map((stage) => (
           <li key={stage.label} className="panel">
             <p className="eyebrow">{stage.label}</p>
             <p>{stage.title}</p>
