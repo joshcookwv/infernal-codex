@@ -108,7 +108,9 @@ README.md                         Beginner setup, publishing, and deployment gui
 - Consumes: approved static-export architecture and `/infernal-codex` production base path.
 - Produces: `npm run dev`, `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build`; a static `out/` directory; `siteConfig`, `withBasePath()`, `assetPath()`, and `absoluteUrl()` for later tasks.
 
-- [ ] **Step 1: Initialize the dependency manifest without scaffolding over the existing documentation**
+- [x] **Step 1: Initialize the dependency manifest without scaffolding over the existing documentation**
+
+> **Deviation:** Ran via Git Bash (`npm`) rather than PowerShell (`npm.cmd`); equivalent on this machine. `npm init -y` defaults `package.json` to `"type": "commonjs"`, which is not itself part of this step's instructions but had to be overridden later in Step 5 — see that step's deviation note.
 
 Run from `C:\Users\joshc\OneDrive\Documents\ChatGPT\Infernal Codex`:
 
@@ -132,7 +134,7 @@ Confirm `package.json` contains `"private": true` as a Boolean, not the string `
 
 Create `.nvmrc` containing only `24` followed by a newline. Before installing, `node --version` must report major version 24; otherwise install Node 24 LTS before continuing.
 
-- [ ] **Step 2: Write the failing base-path test**
+- [x] **Step 2: Write the failing base-path test**
 
 Create `lib/site-config.test.ts`:
 
@@ -153,7 +155,7 @@ describe("site configuration", () => {
 });
 ```
 
-- [ ] **Step 3: Run the test and verify the missing module failure**
+- [x] **Step 3: Run the test and verify the missing module failure**
 
 Run:
 
@@ -163,7 +165,7 @@ npm.cmd test -- lib/site-config.test.ts
 
 Expected: FAIL because `lib/site-config.ts` does not exist.
 
-- [ ] **Step 4: Add the exact project configuration and site-path interface**
+- [x] **Step 4: Add the exact project configuration and site-path interface**
 
 Create `lib/site-config.ts`:
 
@@ -296,7 +298,7 @@ Create `app/page.tsx` with `export default function Home() { return <main><h1>In
 
 Add `out/`, `.next/`, `node_modules/`, coverage, `.env*` except `.env.example`, `playwright-report/`, and `test-results/` to `.gitignore`.
 
-- [ ] **Step 5: Run the foundation checks**
+- [x] **Step 5: Run the foundation checks**
 
 Run:
 
@@ -310,12 +312,16 @@ Test-Path out\index.html
 
 Expected: all commands pass and the final command returns `True`.
 
-- [ ] **Step 6: Commit the project foundation**
+> **Deviation:** `npm run build` initially failed under Next.js 16 / Turbopack with `Error: Specified module format (CommonJs) is not matching the module format of the source code (EcmaScript Modules)` — Turbopack in this Next.js version strictly enforces that `package.json`'s `"type"` field matches the module syntax actually used in source files, and `npm init -y` had left it at the default `"commonjs"` while every source file uses `import`/`export`. Fixed by running `npm pkg set type=module`, which is standard for a current Next.js project and is not itself a plan deviation in outcome, only in that the plan's exact command list didn't anticipate it. This also silently fixed a pre-existing Vitest config warning about the same mismatch. Additionally added `*.tsbuildinfo` to `.gitignore` (a generated incremental-typecheck cache file the plan's `.gitignore` list didn't call out, but that shouldn't be committed). `npm run build` also caused Next.js to auto-append `.next/dev/types/**/*.ts` to `tsconfig.json`'s `include` array and add two import lines to `next-env.d.ts` — both are Next.js's own standard generated-file behavior, left as Next.js produced them per this step's instruction not to hand-edit `next-env.d.ts`.
+
+- [x] **Step 6: Commit the project foundation**
 
 ```powershell
 git add package.json package-lock.json tsconfig.json next-env.d.ts next.config.ts postcss.config.mjs eslint.config.mjs vitest.config.ts vitest.setup.ts .gitignore .nvmrc app lib/site-config.ts lib/site-config.test.ts
 git commit -m "chore: establish static Next.js showcase"
 ```
+
+> **Deviation:** No GitHub remote exists yet (it isn't created until Task 10, which requires explicit user approval before making anything public), so the Branching and Integration Workflow's "push branch, open PR" step was not yet possible. Committed on branch `task-1-project-foundation`, then fast-forward merged directly into `master` locally (`git merge --ff-only`) and deleted the branch, with explicit user approval since this is a branch-history-changing action. This same interim pattern (local branch → local ff-merge into `master`) will apply to every task until Task 10 establishes the remote, after which real PRs become possible.
 
 ---
 
@@ -339,7 +345,7 @@ git commit -m "chore: establish static Next.js showcase"
 - Consumes: `assetPath()` from Task 1 and Markdown files with the approved front matter.
 - Produces: `NEWS_CATEGORIES`, `NewsCategory`, `NewsPost`, `loadNewsPosts()`, `getPublishedPosts()`, `getPublishedPost()`, and `NewsBody`.
 
-- [ ] **Step 1: Define the content interfaces**
+- [x] **Step 1: Define the content interfaces**
 
 Create `lib/content/types.ts`:
 
@@ -365,7 +371,9 @@ export type NewsPost = {
 };
 ```
 
-- [ ] **Step 2: Write failing validation, sorting, draft, slug, image, and Markdown tests**
+- [x] **Step 2: Write failing validation, sorting, draft, slug, image, and Markdown tests**
+
+> **Deviation:** The two `.toThrow(/…/s)` assertions use the regex dotAll (`s`) flag, which TypeScript only permits when `target` is ES2018 or later — Task 1's `tsconfig.json` sets `target: "ES2017"`, so `tsc --noEmit` failed with `TS1501` on both. Rewrote them as `/bad-category\.md[\s\S]*category/` and `/missing-image\.md[\s\S]*image asset not found/` (matching "any character including newlines" via a character class instead of the `s` flag) rather than raising the shared `tsconfig.json` target, since that target is a Task 1 decision this task shouldn't unilaterally change. Matching behavior is identical.
 
 Create `older.md`, `newer.md`, and `draft.md` with this structure, changing the title/date/published values to `Older/2026-08-01/true`, `Newer/2026-08-10/true`, and `Draft/2026-08-11/false` respectively:
 
@@ -429,7 +437,7 @@ it("reports a specified image that does not exist", () => {
 });
 ```
 
-- [ ] **Step 3: Run tests and verify they fail**
+- [x] **Step 3: Run tests and verify they fail**
 
 ```powershell
 npm.cmd test -- lib/content/__tests__/news.test.tsx
@@ -437,7 +445,7 @@ npm.cmd test -- lib/content/__tests__/news.test.tsx
 
 Expected: FAIL because `lib/content/news.ts` does not exist.
 
-- [ ] **Step 4: Implement the content loader and renderer**
+- [x] **Step 4: Implement the content loader and renderer**
 
 Implement `lib/content/news.ts` with this public shape and logic:
 
@@ -511,7 +519,7 @@ export function NewsBody({ markdown }: { markdown: string }) {
 
 Do not install or enable `rehype-raw`. Keep filesystem access in `lib/content/news.ts`; page and card components receive typed post objects.
 
-- [ ] **Step 5: Add real content, template, and fallback artwork**
+- [x] **Step 5: Add real content, template, and fallback artwork**
 
 Create `content/news-template.md` by copying the following post and changing `published` to `false`. Create `content/news/welcome-to-infernal-codex.md` with this exact initial content:
 
@@ -533,7 +541,7 @@ A Windows desktop edition is also in development. Desktop updates will appear he
 
 Create `public/images/news/fallback.svg` using the obsidian, charcoal, and ember palette, an abstract codex mark, and no tiny text.
 
-- [ ] **Step 6: Verify and commit the content engine**
+- [x] **Step 6: Verify and commit the content engine**
 
 ```powershell
 npm.cmd test -- lib/content/__tests__/news.test.tsx
@@ -542,6 +550,8 @@ npm.cmd run lint
 git add lib/content components/content/news-body.tsx content public/images/news
 git commit -m "feat: add validated Markdown news content"
 ```
+
+> **Deviation:** Same branching note as Task 1 — committed on `task-2-news-engine`, no remote to push/PR against yet, fast-forward merged into `master` locally.
 
 ---
 

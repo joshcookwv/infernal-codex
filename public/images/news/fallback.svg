@@ -1,0 +1,30 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Infernal Codex">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17100d" />
+      <stop offset="100%" stop-color="#0b0706" />
+    </linearGradient>
+    <linearGradient id="ember" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff9a4a" />
+      <stop offset="100%" stop-color="#ff6b1a" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)" />
+  <g transform="translate(400 225)">
+    <path
+      d="M -90 -110 L -90 110 L 0 130 L 90 110 L 90 -110 L 0 -90 Z"
+      fill="none"
+      stroke="#40271d"
+      stroke-width="6"
+    />
+    <path d="M 0 -90 L 0 130" stroke="#40271d" stroke-width="4" />
+    <path
+      d="M -60 -60 L -60 70 M -30 -75 L -30 90 M 30 -75 L 30 90 M 60 -60 L 60 70"
+      stroke="#40271d"
+      stroke-width="3"
+      opacity="0.6"
+    />
+    <circle cx="0" cy="-10" r="34" fill="url(#ember)" />
+    <path d="M 0 -34 L 10 -8 L 34 -6 L 14 12 L 20 36 L 0 22 L -20 36 L -14 12 L -34 -6 L -10 -8 Z" fill="#17100d" />
+  </g>
+</svg>
