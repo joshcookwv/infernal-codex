@@ -22,6 +22,16 @@
 - Use the official Next.js static-export model: `output: "export"`, build-time `generateStaticParams`, unoptimized images, and no server-only features.
 - Use Node.js 24 LTS (`>=24 <25`); the planning machine currently reports `v24.18.0`.
 - Keep `package-lock.json` committed so the exact dependency versions resolved during implementation are reproducible.
+- Tasks are implemented on per-task branches and merged into `master` through pull requests (see Branching and Integration Workflow below) rather than committed directly to `master`, so that multiple agents can work the plan concurrently without colliding on the same branch.
+
+## Branching and Integration Workflow
+
+- Before starting a task, run `git checkout master` and `git pull` so the new branch is cut from an up-to-date `master`.
+- Create a branch named `task-N-<slug>` (e.g. `task-1-project-foundation`) for that task's work. Do not commit task work directly to `master`.
+- Wherever a task's steps say to `git commit`, instead commit on the task branch, then run `git push -u origin task-N-<slug>` and open a pull request with `gh pr create --fill`.
+- Merge the pull request only after `.github/workflows/ci.yml` passes on it. Delete the branch after merge.
+- If two agents are working different tasks at the same time, each keeps its own `task-N-<slug>` branch and merges independently; rebase or resolve conflicts against `master` before merging if another task has landed first.
+- Task 10's final verification assumes every prior task has already been merged into `master` through this workflow — its own release-checklist commit follows the same branch-and-PR pattern before the final `git push origin master` in Task 10 Step 7.
 
 ## Source References
 
@@ -185,6 +195,8 @@ export function absoluteUrl(pathname = "/"): string {
   return `${siteConfig.origin}${siteConfig.canonicalBasePath}${normalized}`;
 }
 ```
+
+`siteConfig.githubUrl` is provisional: it assumes the public repository will be named `infernal-codex`. No such repository exists yet at this point in the plan. Task 10 Step 4 verifies the actual created/existing repository name before publishing and updates `githubUrl`, `canonicalBasePath`, and `NEXT_PUBLIC_BASE_PATH` if it differs.
 
 Create `next.config.ts`:
 
@@ -544,6 +556,9 @@ git commit -m "feat: add validated Markdown news content"
 - Create: `components/layout/__tests__/site-header.test.tsx`
 - Create: `public/images/brand/logo.png`
 - Create: `public/images/brand/social-card.svg`
+- Create: `public/favicon.ico`
+- Create: `public/apple-touch-icon.png`
+- Create: `public/site.webmanifest`
 
 **Interfaces:**
 - Consumes: `siteConfig`, `assetPath()`, and approved branding copied from the mobile repository.
@@ -601,7 +616,7 @@ Create `SiteHeader` and `SiteFooter` as Server Components. Create `MobileNav` as
 
 `app/layout.tsx` must:
 
-- Export `metadata` with `metadataBase: new URL(absoluteUrl("/"))`, title template, description, social-card image, and canonical root.
+- Export `metadata` with `metadataBase: new URL(absoluteUrl("/"))`, title template, description, social-card image, canonical root, and an `icons` entry referencing `favicon.ico`, `apple-touch-icon.png`, and `site.webmanifest`.
 - Render a skip link targeting `#main-content`.
 - Render `SiteHeader`, `<main id="main-content">`, and `SiteFooter`.
 - Avoid client state in the root layout.
@@ -627,6 +642,8 @@ Add the shared layout classes, a visible `:focus-visible` treatment, minimum 44p
 
 Create `public/images/brand/social-card.svg` at 1200x630 using the same palette, logo area, product name, and headline.
 
+Generate `public/favicon.ico`, `public/apple-touch-icon.png` (180x180), and `public/site.webmanifest` from the same brand mark and palette as the logo and social card.
+
 - [ ] **Step 6: Verify and commit the shared shell**
 
 ```powershell
@@ -634,7 +651,7 @@ npm.cmd test -- components/layout/__tests__/site-header.test.tsx
 npm.cmd run typecheck
 npm.cmd run lint
 npm.cmd run build
-git add app components/layout public/images/brand
+git add app components/layout public/images/brand public/favicon.ico public/apple-touch-icon.png public/site.webmanifest
 git commit -m "feat: add Infernal Codex site shell"
 ```
 
@@ -1422,6 +1439,8 @@ Use the production Pages build and review 390x844, 768x1024, 1440x900, and 1920x
 - Keyboard order, menu behavior, skip link, focus rings, 200% zoom, and reduced motion work visibly.
 - There is no horizontal overflow.
 - No private credential, build artifact, environment file, or reviewer identifier appears in the site or Git history.
+- `siteConfig.privacyUrl` and `siteConfig.licensesUrl` both resolve to live pages (Task 8's automated link checker only validates that external links use HTTPS, not that these specific cross-repository URLs return a successful response).
+- The Task 7 screenshots still reflect the current shipped Android app UI rather than a stale snapshot from when they were copied.
 
 Fix only evidenced issues, rerun the nearest focused test, and then rerun `npm run verify`.
 
@@ -1453,6 +1472,8 @@ gh repo create joshcookwv/infernal-codex --public --source . --remote origin --p
 
 If the repository already exists, verify its owner and visibility before adding the exact remote and pushing `master`; do not overwrite an unrelated repository.
 
+Confirm the created or existing repository's name is exactly `infernal-codex`. If GitHub assigned or required a different name, update `siteConfig.githubUrl` and `siteConfig.canonicalBasePath` in `lib/site-config.ts`, and `NEXT_PUBLIC_BASE_PATH` in `next.config.ts`'s consumers (`build:pages` script and `.github/workflows/pages.yml`) to match the real name, then rerun `npm run verify` and land the change through a task branch and pull request per the Branching and Integration Workflow before continuing.
+
 - [ ] **Step 5: Enable GitHub Actions as the Pages source and observe deployment**
 
 Open the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions**, and run the Pages workflow if the initial push did not trigger it. Record the workflow URL and wait for both build and deploy jobs to succeed.
@@ -1478,14 +1499,31 @@ Verify HTTP success, correct branding, working assets and navigation, accurate p
 
 Add the public URL, successful workflow run URL, verification date, and checked results to `docs/release-checklist.md`.
 
+Commit this on a task branch and open a pull request per the Branching and Integration Workflow, same as every prior task:
+
 ```powershell
+git checkout -b task-10-release-verification
 git add docs/release-checklist.md
 git commit -m "docs: verify public showcase deployment"
-git push origin master
+git push -u origin task-10-release-verification
+gh pr create --fill
+```
+
+After the pull request passes CI and merges, sync local `master` and confirm it matches `origin/master`:
+
+```powershell
+git checkout master
+git pull
 git status --short --branch
 ```
 
 Expected: clean status and local `master` synchronized with `origin/master`.
+
+## Deferred Follow-Up (Out of Scope for This Plan)
+
+- Flip "Android launch in progress" copy (Hero, PlatformStatus, and the relevant FAQ answer) to real availability wording and a verified Google Play link once the Android release actually ships.
+- Consider per-article social share images for News posts instead of the one shared `social-card.svg` used across every route.
+- Consider adding privacy-conscious analytics (e.g., Plausible or GoatCounter, no PII, no advertising trackers) as a possible v2 addition — analytics are intentionally excluded from this initial release per Global Constraints.
 
 ## Final Completion Evidence
 
