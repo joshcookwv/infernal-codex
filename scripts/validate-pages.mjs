@@ -5,6 +5,7 @@ const required = [
   "out/index.html",
   "out/404.html",
   "out/news/welcome-to-infernal-codex/index.html",
+  "out/news/testers-wanted/index.html",
 ];
 const errors = required.filter((file) => !fs.existsSync(file)).map((file) => `Missing export: ${file}`);
 

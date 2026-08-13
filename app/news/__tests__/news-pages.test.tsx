@@ -12,7 +12,10 @@ describe("static news publishing", () => {
   });
 
   it("generates only published article paths", () => {
-    expect(generateStaticParams()).toEqual([{ slug: "welcome-to-infernal-codex" }]);
+    expect(generateStaticParams()).toEqual([
+      { slug: "testers-wanted" },
+      { slug: "welcome-to-infernal-codex" },
+    ]);
   });
 
   it("publishes canonical public URLs", () => {
