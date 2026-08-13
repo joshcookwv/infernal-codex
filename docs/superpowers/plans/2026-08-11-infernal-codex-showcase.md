@@ -1063,7 +1063,7 @@ git commit -m "feat: publish static news and metadata routes"
 - Consumes: approved current store screenshots from the mobile repository and all image paths referenced by marketing/news content.
 - Produces: website-owned optimized public assets and `npm run validate:assets`.
 
-- [ ] **Step 1: Copy the exact approved screenshot set without changing the mobile repository**
+- [x] **Step 1: Copy the exact approved screenshot set without changing the mobile repository**
 
 ```powershell
 New-Item -ItemType Directory -Force 'public\images\screenshots'
@@ -1078,7 +1078,9 @@ Copy-Item -LiteralPath 'D:\Claude\projects\dm-assistant-mobile\docs\store-screen
 
 Do not copy APKs, AABs, environment files, database files, API keys, reviewer credentials, or non-public internal documents.
 
-- [ ] **Step 2: Write the failing asset validator**
+- [x] **Step 2: Write the failing asset validator**
+
+> **Deviation:** The plan's exact given script scans every `.ts`/`.tsx`/`.md` file under `app`, `components`, `content`, and `lib` for `/images/...` string references — which also sweeps up Task 2's test fixture `lib/content/__tests__/fixtures/invalid/image/missing-image.md`, whose `image: "/images/news/missing.webp"` frontmatter is *intentionally* invalid (it exists to test `loadNewsPosts`'s error handling). Running the script as given therefore reported that missing asset even with no real problem in the site — a permanent false-positive baked into the plan's own script, not something introduced by this task. Added a filter excluding any path containing a `__tests__` segment before scanning, so only real site source is checked.
 
 Create `scripts/validate-assets.mjs`:
 
@@ -1130,7 +1132,7 @@ Add:
 
 to `package.json`, then temporarily change one marketing image to `/images/screenshots/missing.png`.
 
-- [ ] **Step 3: Run the validator and verify the intentional failure**
+- [x] **Step 3: Run the validator and verify the intentional failure**
 
 ```powershell
 npm.cmd run validate:assets
@@ -1138,11 +1140,13 @@ npm.cmd run validate:assets
 
 Expected: FAIL naming `/images/screenshots/missing.png`.
 
-- [ ] **Step 4: Complete all final image mappings and public copy**
+- [x] **Step 4: Complete all final image mappings and public copy**
+
+> **Deviation:** All six `Feature` image mappings, alt text, and benefit-led copy were already complete from Task 4 (per that task's exact given code), and the hero already uses `dashboard.png`/`encounter.png`. Nothing needed to change beyond reverting Step 3's intentional `missing.png` edit back to `campaign.png`. `monsters.png` was copied per this step's exact file list but isn't referenced by any `Feature` — the plan doesn't assign it to a seventh feature, so it's included as an approved-but-currently-unused asset, matching the plan's own scope.
 
 Replace the intentional missing path. Complete every `Feature` object with its copied screenshot, useful alternative text describing the visible app screen, and benefit-led copy. Use the dashboard and encounter imagery in the hero device composition. Do not claim Google Play availability until the listing URL is verified and approved.
 
-- [ ] **Step 5: Verify source isolation, assets, and build**
+- [x] **Step 5: Verify source isolation, assets, and build**
 
 ```powershell
 npm.cmd run validate:assets
@@ -1155,12 +1159,16 @@ git -C 'D:\Claude\projects\dm-assistant' status --short
 
 Compare the last two outputs with their pre-task state; the website work must not add or modify entries.
 
-- [ ] **Step 6: Commit the approved product presentation**
+> **Deviation:** `dm-assistant`'s status is unchanged (clean) from its pre-implementation state. `dm-assistant-mobile`'s status has *shrunk* since the Task 3 Step 1 baseline — from many modified/untracked files down to just `README.md` modified — reflecting the user's own parallel work committing/cleaning that repo during this session, not anything this task did (the only interaction here was a read-only `cp` of already-existing screenshot files). No new modifications or untracked entries were introduced by website work in either repository.
+
+- [x] **Step 6: Commit the approved product presentation**
 
 ```powershell
 git add public/images/screenshots lib/marketing-content.ts components/marketing/hero.tsx app/features/page.tsx scripts/validate-assets.mjs package.json package-lock.json
 git commit -m "feat: add approved product showcase assets"
 ```
+
+> **Deviation:** `components/marketing/hero.tsx` and `app/features/page.tsx` had no changes this task (both already used the final screenshot mappings since Task 4), so nothing new was staged from them — including them in the `git add` is a no-op, not an omission. Same branching note as prior tasks: committed on `task-7-screenshots`, fast-forward merged into `master` locally (still no remote).
 
 ---
 
