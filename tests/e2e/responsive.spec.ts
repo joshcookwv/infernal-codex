@@ -59,15 +59,20 @@ test.describe("desktop composition", () => {
     expect(pageHeight).toBeLessThanOrEqual(5400);
   });
 
-  test("a single news article receives editorial width", async ({ page }) => {
+  test("news cards adapt their editorial width to the published article count", async ({ page }) => {
     await page.goto("/");
 
     const gridBox = await page.locator(".latest-news-grid").boundingBox();
-    const cardBox = await page.locator(".latest-news-grid .news-card").first().boundingBox();
+    const cards = page.locator(".latest-news-grid .news-card");
+    const cardCount = await cards.count();
+    const cardBox = await cards.first().boundingBox();
 
     expect(gridBox).not.toBeNull();
     expect(cardBox).not.toBeNull();
-    expect((cardBox?.width ?? 0) / (gridBox?.width ?? 1)).toBeGreaterThanOrEqual(0.65);
+    expect(cardCount).toBeGreaterThan(0);
+
+    const minimumRatio = cardCount === 1 ? 0.65 : cardCount === 2 ? 0.45 : 0.3;
+    expect((cardBox?.width ?? 0) / (gridBox?.width ?? 1)).toBeGreaterThanOrEqual(minimumRatio);
   });
 
   test("short pages keep the footer at the viewport edge", async ({ page }) => {
@@ -91,5 +96,33 @@ test.describe("mobile menu composition", () => {
     expect(panelBox).not.toBeNull();
     expect(panelBox?.width).toBeGreaterThanOrEqual(350);
     expect(panelBox?.x).toBeLessThanOrEqual(20);
+  });
+});
+
+test.describe("news article composition", () => {
+  test("desktop uses an editorial split", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/news/testers-wanted/");
+
+    const headingBox = await page.locator(".news-article-heading").boundingBox();
+    const mediaBox = await page.locator(".news-article-media").boundingBox();
+
+    expect(headingBox).not.toBeNull();
+    expect(mediaBox).not.toBeNull();
+    expect(mediaBox?.x ?? 0).toBeGreaterThan((headingBox?.x ?? 0) + (headingBox?.width ?? 0));
+    expect(Math.abs((mediaBox?.y ?? 0) - (headingBox?.y ?? 0))).toBeLessThan(180);
+  });
+
+  test("phone stacks the poster below the heading", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/news/testers-wanted/");
+
+    const headingBox = await page.locator(".news-article-heading").boundingBox();
+    const mediaBox = await page.locator(".news-article-media").boundingBox();
+
+    expect(headingBox).not.toBeNull();
+    expect(mediaBox).not.toBeNull();
+    expect(mediaBox?.y ?? 0).toBeGreaterThan((headingBox?.y ?? 0) + (headingBox?.height ?? 0));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 });

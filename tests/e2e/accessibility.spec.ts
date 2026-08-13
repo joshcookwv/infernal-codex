@@ -5,6 +5,7 @@ const ROUTES = [
   "/",
   "/features/",
   "/news/",
+  "/news/testers-wanted/",
   "/news/welcome-to-infernal-codex/",
   "/roadmap/",
   "/about/",

@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import NewsPage from "@/app/news/page";
 import sitemap from "@/app/sitemap";
-import { generateStaticParams } from "@/app/news/[slug]/page";
+import NewsArticlePage, { generateStaticParams } from "@/app/news/[slug]/page";
 
 describe("static news publishing", () => {
   it("lists published news newest first", () => {
@@ -41,6 +41,35 @@ describe("news article metadata", () => {
     );
     const ogImages = metadata.openGraph && "images" in metadata.openGraph ? metadata.openGraph.images : undefined;
     expect(JSON.stringify(ogImages)).toContain("fallback.svg");
+  });
+});
+
+describe("news article presentation", () => {
+  it("renders the Testers Wanted post as an editorial invitation", async () => {
+    const page = await NewsArticlePage({
+      params: Promise.resolve({ slug: "testers-wanted" }),
+    });
+
+    const { container } = render(page);
+    const article = within(container.querySelector("article")!);
+
+    expect(article.getByRole("heading", { level: 1, name: "Testers Wanted" })).toBeInTheDocument();
+    expect(
+      article.getByText(
+        "Looking for a few DMs to test Infernal Codex before it goes live on the Play Store.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      article.getByRole("img", { name: "Testers Wanted recruitment announcement" }),
+    ).toBeInTheDocument();
+    expect(
+      article.getByRole("heading", { level: 2, name: "What testers will do" }),
+    ).toBeInTheDocument();
+    expect(article.getByRole("link", { name: "Email to join" })).toHaveAttribute(
+      "href",
+      "mailto:infernalbuldog@gmail.com",
+    );
+    expect(article.getAllByRole("img")).toHaveLength(1);
   });
 });
 
