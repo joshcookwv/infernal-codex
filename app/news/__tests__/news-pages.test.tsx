@@ -13,6 +13,7 @@ describe("static news publishing", () => {
 
   it("generates only published article paths", () => {
     expect(generateStaticParams()).toEqual([
+      { slug: "infernal-codex-for-windows-first-look" },
       { slug: "testers-wanted" },
       { slug: "welcome-to-infernal-codex" },
     ]);
@@ -70,6 +71,46 @@ describe("news article presentation", () => {
       "mailto:infernalbuldog@gmail.com",
     );
     expect(article.getAllByRole("img")).toHaveLength(1);
+  });
+});
+
+describe("news article with a video", () => {
+  const slug = "infernal-codex-for-windows-first-look";
+
+  it("renders an accessible, controllable video with the poster instead of a still image", async () => {
+    const page = await NewsArticlePage({ params: Promise.resolve({ slug }) });
+    const { container } = render(page);
+    const article = container.querySelector("article")!;
+    const video = article.querySelector("video")!;
+
+    expect(video).not.toBeNull();
+    expect(video).toHaveAttribute("controls");
+    expect(video).toHaveAttribute("playsinline");
+    expect(video).toHaveAttribute("preload", "metadata");
+    expect(video).toHaveAttribute("poster", "/images/news/desktop-demo-2026-11-poster.jpg");
+    expect(video).toHaveAttribute("aria-label", "Your table. Your Wi‑Fi. Your campaign. video");
+    expect(video.querySelector("source")).toHaveAttribute("src", "/videos/news/desktop-demo-2026-11.mp4");
+    expect(video.querySelector("source")).toHaveAttribute("type", "video/mp4");
+    expect(within(article).queryByRole("img")).toBeNull();
+  });
+
+  it("says plainly that the desktop app is not downloadable yet and keeps the credits", async () => {
+    const page = await NewsArticlePage({ params: Promise.resolve({ slug }) });
+    const { container } = render(page);
+    const text = container.querySelector("article")!.textContent ?? "";
+
+    expect(text).toMatch(/coming soon: there is no download yet/i);
+    expect(text).toMatch(/Burn The World Waltz.*Kevin MacLeod/);
+    expect(text).toMatch(/System Reference Document 5\.1/);
+    expect(text).toMatch(/your own Claude API key/i);
+    expect(container.querySelector("a[href*='.apk'], a[href*='download']")).toBeNull();
+  });
+
+  it("uses the poster as the social preview image", async () => {
+    const { generateMetadata } = await import("@/app/news/[slug]/page");
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug }) });
+    const ogImages = metadata.openGraph && "images" in metadata.openGraph ? metadata.openGraph.images : undefined;
+    expect(JSON.stringify(ogImages)).toContain("desktop-demo-2026-11-poster.jpg");
   });
 });
 

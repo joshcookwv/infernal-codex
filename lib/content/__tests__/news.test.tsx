@@ -48,6 +48,35 @@ describe("news content", () => {
     }
   });
 
+  it("loads an optional video that exists under public/videos", () => {
+    const [post] = loadNewsPosts(path.join(fixtures, "with-video"), path.join(fixtures, "public"));
+    expect(post.video).toEqual({ src: "/videos/news/clip.mp4" });
+    expect(post.image).toBe("/images/news/clip-poster.jpg");
+  });
+
+  it("gives posts without a video a null video", () => {
+    const posts = loadNewsPosts(path.join(fixtures, "valid"));
+    expect(posts.every((post) => post.video === null)).toBe(true);
+  });
+
+  it("reports a video that does not exist", () => {
+    expect(() =>
+      loadNewsPosts(path.join(fixtures, "invalid", "video"), path.join(fixtures, "public")),
+    ).toThrow(/missing-video\.md[\s\S]*video asset not found/);
+  });
+
+  it("rejects a video path that traverses directories or is not an mp4 under /videos/", () => {
+    expect(() =>
+      loadNewsPosts(path.join(fixtures, "invalid", "video-path"), path.join(fixtures, "public")),
+    ).toThrow(/bad-video\.md[\s\S]*video/);
+  });
+
+  it("reports a video larger than the 40 MB limit", () => {
+    expect(() =>
+      loadNewsPosts(path.join(fixtures, "with-video"), path.join(fixtures, "public"), { maxVideoBytes: 8 }),
+    ).toThrow(/clip\.md[\s\S]*video asset exceeds/);
+  });
+
   it("reports a specified image that does not exist", () => {
     expect(() =>
       loadNewsPosts(path.join(fixtures, "invalid", "image"), path.join(fixtures, "public")),

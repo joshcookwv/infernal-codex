@@ -6,6 +6,8 @@ const required = [
   "out/404.html",
   "out/news/welcome-to-infernal-codex/index.html",
   "out/news/testers-wanted/index.html",
+  "out/news/infernal-codex-for-windows-first-look/index.html",
+  "out/videos/news/desktop-demo-2026-11.mp4",
 ];
 const errors = required.filter((file) => !fs.existsSync(file)).map((file) => `Missing export: ${file}`);
 
