@@ -38,7 +38,7 @@ export default async function NewsArticlePage({ params }: Props) {
 
   return (
     <article className="shell page-section news-article">
-      <header className={post.image ? "news-article-hero panel" : "news-article-heading"}>
+      <header className={post.image || post.video ? "news-article-hero panel" : "news-article-heading"}>
         <div className="news-article-heading">
           <p className="eyebrow">{post.category}</p>
           <h1>{post.title}</h1>
@@ -47,7 +47,20 @@ export default async function NewsArticlePage({ params }: Props) {
             <time dateTime={post.date}>{post.date}</time>
           </p>
         </div>
-        {post.image ? (
+        {post.video ? (
+          <div className="news-article-media">
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              poster={post.image ? assetPath(post.image) : undefined}
+              aria-label={`${post.title} video`}
+            >
+              <source src={assetPath(post.video.src)} type="video/mp4" />
+              Your browser cannot play this video.
+            </video>
+          </div>
+        ) : post.image ? (
           <div className="news-article-media">
             <Image
               src={assetPath(post.image)}

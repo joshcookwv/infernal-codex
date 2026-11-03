@@ -36,6 +36,9 @@ becomes the post's URL slug, so it must be unique and URL-safe (lowercase, hyphe
 | `category` | Yes | One of `News`, `Android`, `Desktop`, `Release Notes` (see `lib/content/types.ts`). |
 | `published` | Yes | `true` to publish, `false` to keep as an unpublished draft. |
 | `image` | No | Must start with `/images/` and point to a file that actually exists under `public/`. Omit it to use the automatic fallback artwork. |
+| `video` | No | An object `video:` with `src: "/videos/news/<name>.mp4"`: an mp4 that exists under `public/videos/`, at most 40 MB (a short web render: H.264, `-movflags +faststart`; GitHub rejects files over 100 MB). The article shows it in place of the still image, with `image` as its poster, so set `image` too. The loader and `npm run validate:assets` check that the file exists and is not too large. |
+
+A post with a video should say in its text what the video shows (the page has no separate caption track, so burn captions into the video when it has no speech, and keep any credits in the body).
 
 The body below the front matter is standard Markdown. Raw HTML in the body is intentionally not
 rendered (for safety) — write formatting in Markdown only.
